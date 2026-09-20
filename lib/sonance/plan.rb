@@ -99,11 +99,14 @@ module Sonance
     def algorithm_plan(rows)
       definitions = rows.filter_map do |row|
         row.produced_by if row.produced_by.is_a?(FromAlgorithm)
-      end.uniq
-      references = definitions.each_with_index.to_h { |definition, index| [definition, "a#{index}"] }
+      end
+      definitions = definitions.uniq { |definition| algorithm_key(definition) }
+      references = definitions.each_with_index.to_h do |definition, index|
+        [algorithm_key(definition), "a#{index}"]
+      end
       plans = definitions.map do |definition|
         {
-          ref: references.fetch(definition),
+          ref: references.fetch(algorithm_key(definition)),
           name: definition.name,
           params: definition.params,
           sample_rate: definition.sample_rate
@@ -111,6 +114,10 @@ module Sonance
       end.freeze
 
       [plans, references]
+    end
+
+    def algorithm_key(definition)
+      [definition.name, definition.params]
     end
 
     def load_plan(graph_models, algorithms)
@@ -128,7 +135,7 @@ module Sonance
           {
             id: row.id.to_s,
             kind: row.kind.to_s,
-            from: algorithm_refs.fetch(source),
+            from: algorithm_refs.fetch(algorithm_key(source)),
             take: { output: source.output }.freeze
           }.freeze
         end

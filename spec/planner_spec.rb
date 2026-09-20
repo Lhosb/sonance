@@ -23,6 +23,37 @@ RSpec.describe Sonance::Planner do
     expect(planner.plan_for(descriptors: [:bpm_rhythm2013]).graphs).to be_empty
   end
 
+  it "shares one algorithm instance across descriptors selecting different outputs" do
+    plan = planner.plan_for(descriptors: %i[bpm_rhythm2013 beat_confidence_rhythm2013])
+    single_descriptor_plan = planner.plan_for(descriptors: [:bpm_rhythm2013])
+
+    expect(plan.algorithms).not_to be_empty
+    expect(plan.algorithms.count { |algorithm| algorithm.fetch(:name) == "RhythmExtractor2013" }).to eq(1)
+    expect(plan.emit.map { |emission| emission.fetch(:from) }.uniq).to eq(["a0"])
+    expect(single_descriptor_plan.algorithms.count).to eq(1)
+  end
+
+  it "keeps separate algorithm instances when their parameters differ" do
+    bpm = Sonance::Registry.default.fetch(:bpm_rhythm2013)
+    confidence = Sonance::Registry.default.fetch(:beat_confidence_rhythm2013)
+    confidence = confidence.with(
+      produced_by: confidence.produced_by.with(params: { method: "degara" }.freeze)
+    )
+    registry = Sonance::Registry.new(
+      models: Sonance::Registry.default.models,
+      descriptors: [bpm, confidence]
+    )
+
+    plan = described_class.new(registry:).plan_for(
+      descriptors: %i[bpm_rhythm2013 beat_confidence_rhythm2013]
+    )
+
+    expect(plan.algorithms.map { |algorithm| algorithm.fetch(:params) }).to contain_exactly(
+      { method: "multifeature" },
+      { method: "degara" }
+    )
+  end
+
   it "pins the current inverted relaxed projection pending the Phase B upstream JSON gate" do
     plan = planner.plan_for(descriptors: [:mood_relaxed_musicnn])
 
