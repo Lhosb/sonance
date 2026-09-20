@@ -30,6 +30,7 @@ RSpec.describe Sonance::Planner do
     expect(plan.algorithms).not_to be_empty
     expect(plan.algorithms.count { |algorithm| algorithm.fetch(:name) == "RhythmExtractor2013" }).to eq(1)
     expect(plan.emit.map { |emission| emission.fetch(:from) }.uniq).to eq(["a0"])
+    expect(plan.emit.map { |emission| emission.fetch(:take).fetch(:output) }).to contain_exactly("bpm", "confidence")
     expect(single_descriptor_plan.algorithms.count).to eq(1)
   end
 
