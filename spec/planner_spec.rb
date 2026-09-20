@@ -55,6 +55,26 @@ RSpec.describe Sonance::Planner do
     )
   end
 
+  it "keeps separate algorithm instances when their sample rates differ" do
+    bpm = Sonance::Registry.default.fetch(:bpm_rhythm2013)
+    confidence = Sonance::Registry.default.fetch(:beat_confidence_rhythm2013)
+    confidence = confidence.with(
+      produced_by: confidence.produced_by.with(sample_rate: 16_000)
+    )
+    registry = Sonance::Registry.new(
+      models: Sonance::Registry.default.models,
+      descriptors: [bpm, confidence]
+    )
+
+    plan = described_class.new(registry:).plan_for(
+      descriptors: %i[bpm_rhythm2013 beat_confidence_rhythm2013]
+    )
+
+    expect(plan.algorithms.map { |algorithm| algorithm.fetch(:sample_rate) }).to contain_exactly(44_100, 16_000)
+    expect(plan.loads.map { |load| load.fetch(:sample_rate) }).to contain_exactly(44_100, 16_000)
+    expect(plan.emit.map { |emission| emission.fetch(:from) }).to eq(%w[a0 a1])
+  end
+
   it "pins the current inverted relaxed projection pending the Phase B upstream JSON gate" do
     plan = planner.plan_for(descriptors: [:mood_relaxed_musicnn])
 

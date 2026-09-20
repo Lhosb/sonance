@@ -117,7 +117,7 @@ module Sonance
     end
 
     def algorithm_key(definition)
-      [definition.name, definition.params]
+      [definition.name, definition.params, definition.sample_rate]
     end
 
     def load_plan(graph_models, algorithms)
