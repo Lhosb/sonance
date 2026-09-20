@@ -163,10 +163,11 @@ module Sonance
         def terminate(wait_thread)
           Process.kill("TERM", -wait_thread.pid)
           Timeout.timeout(2) { wait_thread.value }
-        rescue Errno::ESRCH
+        # Linux reports a vanished process group as ESRCH, while macOS can report EPERM.
+        rescue Errno::ESRCH, Errno::EPERM
           nil
         rescue Timeout::Error
-          Process.kill("KILL", -wait_thread.pid)
+          kill_group(wait_thread)
           wait_thread.value
         end
       end

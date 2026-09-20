@@ -30,6 +30,50 @@ RSpec.describe Sonance::Backends::EssentiaPython::CommandRunner do
     end
   end
 
+  it "treats EPERM while sending TERM as an already terminated process group" do
+    runner = described_class.new
+    signals = []
+
+    allow(Process).to receive(:kill).and_wrap_original do |original, signal, pid|
+      signals << signal
+      result = original.call(signal, pid)
+      raise Errno::EPERM if signal == "TERM"
+
+      result
+    end
+
+    expect { runner.call([RbConfig.ruby, "-e", "sleep 3"], timeout: 0.05) }
+      .to raise_error(Sonance::Backends::EssentiaPython::CommandTimeout)
+    expect(signals).to eq(["TERM"])
+  end
+
+  it "treats EPERM after termination times out as an already terminated process group" do
+    runner = described_class.new
+    signals = []
+    termination_timeout_entered = false
+
+    allow(Timeout).to receive(:timeout).and_wrap_original do |original, duration, &block|
+      if duration == 2
+        termination_timeout_entered = true
+        raise Timeout::Error
+      end
+
+      original.call(duration, &block)
+    end
+    allow(Process).to receive(:kill).and_wrap_original do |original, signal, pid|
+      signals << signal
+      next 1 if signal == "TERM"
+
+      original.call(signal, pid)
+      raise Errno::EPERM
+    end
+
+    expect { runner.call([RbConfig.ruby, "-e", "sleep 3"], timeout: 0.05) }
+      .to raise_error(Sonance::Backends::EssentiaPython::CommandTimeout)
+    expect(termination_timeout_entered).to be(true)
+    expect(signals).to eq(%w[TERM KILL])
+  end
+
   # Bounds are exercised through stub_const at a small size so the boundary can be hit
   # exactly. The real ceiling is asserted separately below, so these are not testing a
   # constant that only exists in the spec.
