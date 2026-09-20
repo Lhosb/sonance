@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0
+
+This is an additive release:
+
+- Descriptor values implement `Value#as_json` and `Value#to_json`, producing
+  real JSON values instead of the `Object#to_json` inspect form.
+- Subprocess stdout and stderr reads are bounded by `MAX_STREAM_BYTES`.
+- The Python and numpy stack is pinned, and `NOTICE` records licence and source
+  URIs.
+- The canonical CPU gate matches CPU model names case-insensitively, producing
+  consistent golden-gate results across runners with identical trees.
+
 ## 0.3.0
 
 This is a breaking release:
