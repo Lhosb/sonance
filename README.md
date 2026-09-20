@@ -68,6 +68,39 @@ rows use the model family (for example, `danceability_musicnn`), while
 algorithm-backed rows use the algorithm slug (for example,
 `bpm_rhythm2013`).
 
+## Releases
+
+Cut release tags only after the release pull request has been squash-merged.
+Fetch the remote, resolve `origin/main`, and create the annotated tag on that
+exact commit. Never tag a feature-branch tip or the local `HEAD`, even when its
+tree matches `main`.
+
+Before pushing a tag, verify that its commit is an ancestor of the fetched
+remote branch:
+
+```sh
+git fetch origin
+release_commit=$(git rev-parse origin/main)
+git tag -a vX.Y.Z "$release_commit" -m "Sonance vX.Y.Z"
+git merge-base --is-ancestor 'vX.Y.Z^{commit}' origin/main
+git push origin vX.Y.Z
+```
+
+Do not push if the ancestry check exits nonzero. The historical tag-object and
+release-commit mapping is recorded in `CHANGELOG.md`.
+
+The `origin/feat/essentia-gem-v2-phase-a` branch is retained intentionally.
+The `v0.3.0` tag already keeps its release commit reachable, so deleting the
+branch provides no provenance benefit.
+
+Shallow and single-branch clones may omit release tags. Use a full clone when
+working with releases, or explicitly fetch complete history and tags:
+
+```sh
+git fetch origin --unshallow
+git fetch origin --tags
+```
+
 ## Security notes
 
 `models_dir` is assumed to be a local directory that is not writable by an untrusted process or
