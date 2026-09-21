@@ -8,6 +8,6 @@ RSpec.describe "sonance.gemspec" do
   end
 
   it "declares the current Sonance release version" do
-    expect(gemspec.version.to_s).to eq("0.4.0")
+    expect(gemspec.version.to_s).to eq("0.4.1")
   end
 end
