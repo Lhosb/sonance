@@ -11,6 +11,19 @@ are distinct Git objects:
 | `v0.2.0` | `0ac6e6bd1289d4a27edb9c1a40ae1427f6b66397` | `848f6894a6022b5a32ae2b6b0c6898ac84986fa0` | The release commit is not an ancestor of `main`, and no commit on `main` reproduces its tree. |
 | `v0.3.0` | `cf8e613e9a9b3b3b576df4e20e61e63ec25dffe6` | `66393972a8b57ee116afec0fbeb879a0c410dbca` | The release commit is not an ancestor of `main`; its tree matches `7aabc963fe1770882ea6bf1d6df2a0da341e1cc6` on `main`. |
 | `v0.4.0` | `7428f026f7acd262b0d0880498faf59d96bf8795` | `1115824c8fec533037c35aaf4ec091bb42ac63df` | The release commit is an ancestor of `main`. |
+| `v0.4.1` | `5ea0ffc6c1409638268b017f0e943d63cc1408a5` | `dc9a4aedf741aa37f6c791b2ddf9782782b5e55d` | The release commit is an ancestor of `main`. |
+
+## 0.4.1
+
+This is a patch release with two bug fixes and no API changes:
+
+- Timeout process-group cleanup in `terminate` now rescues `Errno::EPERM` as
+  well as `Errno::ESRCH`, matching `kill_group`. Linux reports a vanished
+  process group as `Errno::ESRCH`; macOS can report `Errno::EPERM`. (issue #21,
+  PR #26)
+- The extraction planner deduplicates algorithm instances on name, params, and
+  sample rate, so two `RhythmExtractor2013` definitions differing only in
+  sample rate are no longer collapsed. (issue #11, PR #27)
 
 ## 0.4.0
 
