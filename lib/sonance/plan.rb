@@ -20,7 +20,7 @@ module Sonance
   end
 
   # The planner is intentionally one cohesive translation from registry rows to the wire plan.
-  # rubocop:disable Metrics/ClassLength
+  # rubocop:disable-next Metrics/ClassLength
   class Planner
     SCHEMA_VERSION = 1
     GRAPH_ALGORITHMS = {
@@ -166,5 +166,4 @@ module Sonance
       { index: }.freeze
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

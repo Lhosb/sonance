@@ -21,7 +21,7 @@ module Sonance
 
     # Pathname operations bind an inode at verify time, not backend reopen time; sound only while the
     # models root is not attacker-writable: https://github.com/Lhosb/sonance/issues/2
-    # rubocop:disable Metrics/ClassLength
+    # rubocop:disable-next Metrics/ClassLength
     class Files
       Temporary = Data.define(:path, :file, :device, :inode)
 
@@ -159,7 +159,6 @@ module Sonance
         raise ConfigurationError, "models directory changed during use: #{configured_root}"
       end
     end
-    # rubocop:enable Metrics/ClassLength
 
     class Downloader
       REDIRECT_LIMIT = 5
