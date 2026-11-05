@@ -54,7 +54,7 @@ RSpec.describe "sonance v0.1.0 algebraic parity" do
     end
   end
 
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable-next Metrics/AbcSize
   def assert_parity(filenames: baseline_dir.glob("*.json").map(&:basename).sort, baseline_root: baseline_dir)
     comparisons = 0
 
@@ -76,5 +76,4 @@ RSpec.describe "sonance v0.1.0 algebraic parity" do
 
     comparisons
   end
-  # rubocop:enable Metrics/AbcSize
 end

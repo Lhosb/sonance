@@ -81,7 +81,7 @@ RSpec.describe Sonance::Planner do
     expect(plan.emit.fetch(0).fetch(:take)).to eq(index: 1)
   end
 
-  # rubocop:disable Naming/VariableNumber
+  # rubocop:disable-next Naming/VariableNumber
   it "rejects class projection from the MusiCNN embedding output" do
     descriptor = Sonance::Descriptor.new(
       id: :invalid_musicnn_class,
@@ -109,7 +109,6 @@ RSpec.describe Sonance::Planner do
       %r{no classes recorded for msd_musicnn_1.*output model/dense/BiasAdd}
     )
   end
-  # rubocop:enable Naming/VariableNumber
 
   it "returns immutable required files" do
     plan = planner.plan_for(descriptors: [:mood_happy_musicnn])
@@ -131,7 +130,7 @@ RSpec.describe Sonance::Planner do
     )
   end
 
-  # rubocop:disable Naming/VariableNumber
+  # rubocop:disable-next Naming/VariableNumber
   it "raises a gem configuration error for an unknown graph algorithm" do
     models = Sonance::Registry.default.models.map do |model|
       model.id == :msd_musicnn_1 ? model.with(algorithm: :custom_graph) : model
@@ -148,5 +147,4 @@ RSpec.describe Sonance::Planner do
       /unknown graph algorithm: custom_graph.*valid algorithms:.*tensorflow_predict_musicnn/
     )
   end
-  # rubocop:enable Naming/VariableNumber
 end

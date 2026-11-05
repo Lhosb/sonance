@@ -3,7 +3,7 @@ require "pathname"
 module Sonance
   class Extractor
     # The final parameter is an internal seam for keeping model verification pure in unit tests.
-    # rubocop:disable Metrics/ParameterLists
+    # rubocop:disable-next Metrics/ParameterLists
     def initialize(
       models_dir:,
       timeout_per_file: 60,
@@ -24,7 +24,6 @@ module Sonance
       @environment_verified = false
       @verified_descriptors = Set.new
     end
-    # rubocop:enable Metrics/ParameterLists
 
     # Verifies the runtime and model files required by a descriptor set.
     #
