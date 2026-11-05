@@ -68,7 +68,7 @@ jobs:
             -c 'bundle exec rspec spec/integration/essentia_offline_spec.rb'
 
       - name: Upload resampling measurement
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: resampling-measurement
           path: tmp/resampling_measurement.json
